@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikola Nos Petarda</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        img {
+            cursor: pointer;
+            width: 300px;
+            height: auto;
+            transition: transform 0.2s;
+        }
+        img:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
+
+    <script>
+        const explosionSound = new Audio('explosion.mp3');
+
+        document.getElementById('explodingImage').addEventListener('click', function() {
+            explosionSound.play();
+            this.style.transition = 'transform 0.2s, opacity 0.5s';
+            this.style.transform = 'scale(2)';
+            this.style.opacity = '0';
+
+            setTimeout(() => {
+                alert('Boom!');
+                this.style.transform = 'scale(1)';
+                this.style.opacity = '1';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
