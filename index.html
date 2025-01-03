@@ -11,37 +11,110 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
         }
+
+        h1 {
+            font-size: 2em;
+        }
+
         img {
-            cursor: pointer;
-            width: 300px;
+            width: 90%;
+            max-width: 400px;
             height: auto;
-            transition: transform 0.2s;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.5s;
         }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
         img:active {
-            transform: scale(0.95);
+            animation: explode 0.5s forwards;
+        }
+
+        #replayButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        #volumeControl {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
+    <div>
+        <h1>Nikola Nos Petarda</h1>
+        <p style="font-size: 18px;">Click the image below to see it explode and hear the boom!</p>
+        <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
+        <button id="replayButton">Replay</button>
+        <div style="text-align: center; margin-top: 20px;">
+            <label for="volumeControl">Adjust Sound Volume:</label>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+        </div>
+    </div>
+    <footer>
+        Created by Nikola Nos &copy; 2025
+    </footer>
 
     <script>
         const explosionSound = new Audio('explosion.mp3');
+        const replayButton = document.getElementById('replayButton');
+        const explodingImage = document.getElementById('explodingImage');
 
-        document.getElementById('explodingImage').addEventListener('click', function() {
+        // Handle image click event
+        explodingImage.addEventListener('click', function () {
             explosionSound.play();
             this.style.transition = 'transform 0.2s, opacity 0.5s';
             this.style.transform = 'scale(2)';
             this.style.opacity = '0';
 
-            setTimeout(() => {
-                alert('Boom!');
-                this.style.transform = 'scale(1)';
-                this.style.opacity = '1';
-            }, 1000);
+            // Show replay button after the explosion effect
+            replayButton.style.display = 'block';
+        });
+
+        // Handle replay button click
+        replayButton.addEventListener('click', function () {
+            explodingImage.style.transform = 'scale(1)';
+            explodingImage.style.opacity = '1';
+            replayButton.style.display = 'none';
+        });
+
+        // Adjust sound volume based on user input
+        const volumeControl = document.getElementById('volumeControl');
+        volumeControl.addEventListener('input', () => {
+            explosionSound.volume = volumeControl.value;
         });
     </script>
 </body>
 </html>
+
+
