@@ -12,13 +12,20 @@
             height: 100vh;
             margin: 0;
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             color: white;
             text-align: center;
+            overflow: hidden;
         }
 
         h1 {
-            font-size: 2em;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
         }
 
         img {
@@ -27,6 +34,7 @@
             height: auto;
             cursor: pointer;
             transition: transform 0.2s, opacity 0.5s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes explode {
@@ -52,41 +60,101 @@
 
         #replayButton {
             display: none;
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
+            margin-top: 30px;
+            padding: 12px 24px;
+            font-size: 18px;
             cursor: pointer;
+            background-color: #f7b7a3;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
+
+            #replayButton:hover {
+                background-color: #ff8a5c;
+            }
 
         footer {
             text-align: center;
             margin-top: 50px;
             font-size: 14px;
-            color: #555;
+            color: #bbb;
         }
 
         #volumeControl {
             margin-top: 20px;
+            width: 80%;
+            max-width: 300px;
         }
+
+        #soundSelect {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 1em;
+        }
+
+        /* Tooltip style */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 120px;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                border-radius: 5px;
+                padding: 5px 0;
+                position: absolute;
+                z-index: 1;
+                bottom: 125%;
+                left: 50%;
+                margin-left: -60px;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
     </style>
 </head>
 <body>
     <div>
         <h1>Nikola Nos Petarda</h1>
-        <p style="font-size: 18px;">Click the image below to see it explode and hear the boom!</p>
-        <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
+        <p>Click the image below to see it explode and hear the boom!</p>
+
+        <div class="tooltip">
+            <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
+            <span class="tooltiptext">Click here to explode!</span>
+        </div>
+
         <button id="replayButton">Replay</button>
-        <div style="text-align: center; margin-top: 20px;">
+
+        <div>
             <label for="volumeControl">Adjust Sound Volume:</label>
             <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
         </div>
+
+        <div>
+            <label for="soundSelect">Choose Explosion Sound:</label>
+            <select id="soundSelect">
+                <option value="explosion1.mp3">Explosion 1</option>
+                <option value="explosion2.mp3">Explosion 2</option>
+                <option value="explosion3.mp3">Explosion 3</option>
+            </select>
+        </div>
     </div>
+
     <footer>
         Created by Nikola Nos &copy; 2025
     </footer>
 
     <script>
-        const explosionSound = new Audio('explosion.mp3');
+        let explosionSound = new Audio('explosion1.mp3');
         const replayButton = document.getElementById('replayButton');
         const explodingImage = document.getElementById('explodingImage');
 
@@ -103,6 +171,7 @@
 
         // Handle replay button click
         replayButton.addEventListener('click', function () {
+            explodingImage.style.transition = 'transform 0.3s, opacity 0.3s';
             explodingImage.style.transform = 'scale(1)';
             explodingImage.style.opacity = '1';
             replayButton.style.display = 'none';
@@ -112,6 +181,13 @@
         const volumeControl = document.getElementById('volumeControl');
         volumeControl.addEventListener('input', () => {
             explosionSound.volume = volumeControl.value;
+        });
+
+        // Change explosion sound based on user selection
+        const soundSelect = document.getElementById('soundSelect');
+        soundSelect.addEventListener('change', (event) => {
+            explosionSound.src = event.target.value;
+            explosionSound.play();
         });
     </script>
 </body>
