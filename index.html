@@ -16,11 +16,28 @@
             color: white;
             text-align: center;
             overflow: hidden;
+            position: relative;
         }
 
+            /* Full-screen background image */
+            body::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('your-background-image.jpg'); /* Replace with your image */
+                background-size: cover;
+                background-position: center;
+                filter: blur(10px);
+                z-index: -1;
+            }
+
         h1 {
-            font-size: 2.5em;
+            font-size: 3em;
             margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
         p {
@@ -28,14 +45,20 @@
             margin-bottom: 30px;
         }
 
-        img {
+        /* Hover effect for the image */
+        .tooltip img {
             width: 90%;
             max-width: 400px;
             height: auto;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.5s;
+            transition: transform 0.2s, opacity 0.5s, box-shadow 0.3s;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+
+            .tooltip img:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            }
 
         @keyframes explode {
             0% {
@@ -56,6 +79,23 @@
 
         img:active {
             animation: explode 0.5s forwards;
+        }
+
+        /* Countdown style */
+        #countdown {
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         #replayButton {
@@ -81,51 +121,70 @@
             color: #bbb;
         }
 
-        #volumeControl {
+        #volumeControl, #soundSelect {
             margin-top: 20px;
             width: 80%;
             max-width: 300px;
         }
 
-        #soundSelect {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 1em;
+        /* Floating settings button */
+        #settingsButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff8a5c;
+            padding: 10px 20px;
+            border-radius: 50%;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
         }
 
-        /* Tooltip style */
-        .tooltip {
-            position: relative;
-            display: inline-block;
+        /* Hidden settings menu */
+        #settingsMenu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
         }
 
-            .tooltip .tooltiptext {
-                visibility: hidden;
-                width: 120px;
-                background-color: #333;
-                color: #fff;
-                text-align: center;
+        /* Social share buttons */
+        .social-buttons {
+            margin-top: 30px;
+        }
+
+            .social-buttons button {
+                background-color: #1da1f2;
+                border: none;
+                padding: 10px 15px;
+                font-size: 16px;
+                color: white;
+                cursor: pointer;
+                margin: 5px;
                 border-radius: 5px;
-                padding: 5px 0;
-                position: absolute;
-                z-index: 1;
-                bottom: 125%;
-                left: 50%;
-                margin-left: -60px;
-                opacity: 0;
-                transition: opacity 0.3s;
             }
 
-            .tooltip:hover .tooltiptext {
-                visibility: visible;
-                opacity: 1;
-            }
+                .social-buttons button:hover {
+                    background-color: #1b91d7;
+                }
+
+        /* Custom Cursor */
+        body {
+            cursor: url('your-custom-cursor.png'), auto; /* Replace with your custom cursor */
+        }
     </style>
 </head>
 <body>
     <div>
         <h1>Nikola Nos Petarda</h1>
         <p>Click the image below to see it explode and hear the boom!</p>
+
+        <!-- Countdown -->
+        <div id="countdown"></div>
 
         <div class="tooltip">
             <img id="explodingImage" src="GROM-petarda-2.png" alt="Explosive Image">
@@ -147,27 +206,63 @@
                 <option value="explosion3.mp3">Explosion 3</option>
             </select>
         </div>
+
+        <!-- Social Share Buttons -->
+        <div class="social-buttons">
+            <button onclick="window.open('https://twitter.com/intent/tweet?text=Check+out+this+cool+explosion+site!')">Share on Twitter</button>
+            <button onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + window.location.href)">Share on Facebook</button>
+        </div>
     </div>
 
     <footer>
         Created by Nikola Nos &copy; 2025
     </footer>
 
+    <!-- Floating settings button -->
+    <button id="settingsButton">⚙️</button>
+
+    <!-- Settings menu -->
+    <div id="settingsMenu">
+        <label for="backgroundMusicToggle">Background Music:</label>
+        <input type="checkbox" id="backgroundMusicToggle">
+        <br>
+        <label for="soundToggle">Sound Effects:</label>
+        <input type="checkbox" id="soundToggle" checked>
+    </div>
+
     <script>
+        // Variables
         let explosionSound = new Audio('explosion1.mp3');
+        let backgroundMusic = new Audio('background-music.mp3'); // Replace with your background music
         const replayButton = document.getElementById('replayButton');
         const explodingImage = document.getElementById('explodingImage');
+        const countdownElement = document.getElementById('countdown');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsMenu = document.getElementById('settingsMenu');
+        const volumeControl = document.getElementById('volumeControl');
+        const soundSelect = document.getElementById('soundSelect');
+        const soundToggle = document.getElementById('soundToggle');
+        const backgroundMusicToggle = document.getElementById('backgroundMusicToggle');
 
-        // Handle image click event
-        explodingImage.addEventListener('click', function () {
-            explosionSound.play();
-            this.style.transition = 'transform 0.2s, opacity 0.5s';
-            this.style.transform = 'scale(2)';
-            this.style.opacity = '0';
+        let countdownTime = 5;
 
-            // Show replay button after the explosion effect
-            replayButton.style.display = 'block';
-        });
+        // Show countdown before explosion
+        function startCountdown() {
+            const countdownInterval = setInterval(() => {
+                countdownElement.textContent = countdownTime;
+                countdownTime--;
+
+                if (countdownTime < 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = "BOOM!";
+                    explosionSound.play();
+                    explodingImage.style.transition = 'transform 0.2s, opacity 0.5s';
+                    explodingImage.style.transform = 'scale(2)';
+                    explodingImage.style.opacity = '0';
+                    replayButton.style.display = 'block';
+                }
+            }, 1000);
+        }
 
         // Handle replay button click
         replayButton.addEventListener('click', function () {
@@ -175,20 +270,46 @@
             explodingImage.style.transform = 'scale(1)';
             explodingImage.style.opacity = '1';
             replayButton.style.display = 'none';
+            countdownTime = 5;
+            startCountdown();
         });
 
         // Adjust sound volume based on user input
-        const volumeControl = document.getElementById('volumeControl');
         volumeControl.addEventListener('input', () => {
             explosionSound.volume = volumeControl.value;
         });
 
         // Change explosion sound based on user selection
-        const soundSelect = document.getElementById('soundSelect');
         soundSelect.addEventListener('change', (event) => {
             explosionSound.src = event.target.value;
-            explosionSound.play();
         });
+
+        // Toggle background music
+        backgroundMusicToggle.addEventListener('change', (event) => {
+            if (event.target.checked) {
+                backgroundMusic.play();
+                backgroundMusic.loop = true;
+            } else {
+                backgroundMusic.pause();
+            }
+        });
+
+        // Toggle sound effects
+        soundToggle.addEventListener('change', (event) => {
+            if (event.target.checked) {
+                explosionSound.play();
+            } else {
+                explosionSound.pause();
+            }
+        });
+
+        // Show/Hide settings menu
+        settingsButton.addEventListener('click', () => {
+            settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Start countdown on page load
+        startCountdown();
     </script>
 </body>
 </html>
